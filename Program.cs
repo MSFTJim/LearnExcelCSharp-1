@@ -27,7 +27,9 @@ namespace ConsoleExcel2
                 if (myWorkssheet.Cells[row, col + 1].Value2 != null)
 
                     myWorkssheet.Cells[row, col] = OneAskClassification(myWorkssheet.Cells[row, col + 1].Value2);
+
                 else
+
                     myWorkssheet.Cells[row, col] = "Null Title";
 
             }
@@ -52,5 +54,20 @@ namespace ConsoleExcel2
 
         } // end OneAskClassification
 
-        } // end class
+
+        private static string? OneAskClassification2(string? Title)
+        {
+            string oneaskClass = "classification not set";
+
+            if (Title.Contains("AKS"))
+                oneaskClass = "AKS";
+            else
+                oneaskClass = "Not AKS";
+
+            return oneaskClass;
+
+        } // end OneAskClassification
+
+
+    } // end class
     } // end namespace
