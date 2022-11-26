@@ -62,6 +62,8 @@ namespace ConsoleExcel2
 
             
 
+            
+
             // check cloud event driven
             // Event Hub/Grid, Services bus, event driven
             if (Title.Contains("event", StringComparison.CurrentCultureIgnoreCase))
@@ -89,6 +91,7 @@ namespace ConsoleExcel2
 
         } // end OneAskClassification
 
+     
         private static string ClassifyEventDriven(string title)
         {
             throw new NotImplementedException();
