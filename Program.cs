@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Design.Serialization;
 using System.Data.Common;
+using System.Text.RegularExpressions;
 using xCel = Microsoft.Office.Interop.Excel;
 
 namespace ConsoleExcel2
@@ -50,17 +51,17 @@ namespace ConsoleExcel2
 
             if (ClassifyFusion(Title))
                 OneAskClassification = "Power";
-                
-            //if (ClassifyJava())
-            //        OneAskClassification = "Java";
-            //        else if (ClassifyIntegration())
-            //            OneAskClassification = "Power";
-            //            if (ClassifyCloudNative())
-            //                OneAskClassification = "Power";
-            //                if (ClassifyMisc())
-            //                   OneAskClassification = "Classification not set";
-            //                   else
-            //                        OneAskClassification = "Classification not set";
+
+            if (ClassifyJava())
+                OneAskClassification = "Java";
+            else if (ClassifyIntegration())
+                OneAskClassification = "Power";
+            if (ClassifyCloudNative(Title))
+                OneAskClassification = "Power";
+            if (ClassifyMisc())
+                OneAskClassification = "Misc";
+            //else
+            //    OneAskClassification = "Classification not set";
 
             return OneAskClassification;
 
@@ -78,7 +79,7 @@ namespace ConsoleExcel2
                 if (Title.Contains(Fusion_Term, StringComparison.CurrentCultureIgnoreCase))
                 {
                     OneAskClassification = "LC/NC";
-                    break;
+                    return true;
                 }
             }
             
@@ -88,20 +89,74 @@ namespace ConsoleExcel2
 
         private static bool ClassifyMisc()
         {
-            return true;
+            return false;
         }
-        private static bool ClassifyCloudNative()
+        private static bool ClassifyCloudNative(string Title)
         {
-            return true;
-        }
+            int CloudNativeCount = 0; 
+            List<string> CN_SingleTerms = new List<string>()
+                { "AKS","ARO","ACA", "container","k8s", "kubernetes"};
+            //  Container App covered by container
+
+            List<string> CN_AKSTerms = new List<string>()
+                { "AKS","kubernetes","Kubernetes","k8s"};
+            List<string> CN_ACATerms = new List<string>()
+                { "ACA","container app","ContainerApp"};           
+               
+                foreach (string CNTerm in CN_SingleTerms)
+                {
+                    if (Title.Contains(CNTerm, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        // you made it this far so count it as a CN terms and capture which ever term we found
+                        CloudNativeCount++;
+                        OneAskClassification = CNTerm;
+
+                        // if count is greater than 1, we call it CN and are done
+                        if (CloudNativeCount > 1)
+                        {
+                            OneAskClassification = "Cloud Native";
+                            return false;
+                        }
+                            
+
+                        // Tagging processing
+                        
+                        if (Title.Contains("container", StringComparison.CurrentCultureIgnoreCase))
+                            if (Title.Contains("container app", StringComparison.CurrentCultureIgnoreCase))
+                                OneAskClassification = "ACA";
+                            else
+                                if (Title.Contains("ContainerApp", StringComparison.CurrentCultureIgnoreCase))
+                                OneAskClassification = "ACA";
+                            else
+                                OneAskClassification = "Cloud Native";
+
+                        if (CN_ACATerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))
+                            OneAskClassification = "ACA";
+
+                        if (CN_AKSTerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))
+                            OneAskClassification = "AKS";
+
+                        string repattern = @"(cloud).(native)";
+                        if (Regex.IsMatch(CNTerm, repattern, RegexOptions.IgnoreCase))
+                            OneAskClassification = "Cloud Native";
+
+                    }  // if term contains
+
+                } // foreach terms
+             
+
+                //Console.WriteLine("final value: " + OneAskClassification + ". Count: " + CloudNativeCount + ", " + Title);          
+
+            return false;
+        } // end cn tagging
         private static bool ClassifyIntegration()
         {
-            return true;
+            return false;
         }
 
         private static bool ClassifyJava()
         {
-            return true;
+            return false;
         }
 
         
