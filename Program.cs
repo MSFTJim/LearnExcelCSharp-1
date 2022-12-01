@@ -7,6 +7,8 @@ namespace ConsoleExcel2
 {
      class Program
     {
+
+        static string OneAskClassification = "classification created";
         static void Main(string[] args)
         {
             Console.WriteLine("Start!");
@@ -15,8 +17,6 @@ namespace ConsoleExcel2
             xCel.Application myExcel = new();
             xCel.Workbook myWorkbook;
             xCel.Worksheet myWorkssheet;
-            
-            
 
             myWorkbook = myExcel.Workbooks.Open(OneAskFile);
             myWorkssheet = myWorkbook.Worksheets[1];
@@ -52,18 +52,43 @@ namespace ConsoleExcel2
             if (!ClassifyFusion(Title))
                 if (!ClassifyCloudNative(Title))
                     if (!ClassifyJava(Title))
-                        if (!ClassifyIntegration(Title))                    
-                            { OneAskClassification = "Classification not set"; };            
-            
-            //if (ClassifyMisc())
-            //    OneAskClassification = "Misc";
-            //else
-            //    OneAskClassification = "Classification not set";
+                        if (!ClassifyIntegration(Title))
+                            if (!ClassifyMisc(Title))
+                                OneAskClassification = "Classification not set";           
 
             return OneAskClassification;
 
         } // end OneAskClassification
 
+
+        private static bool ClassifyMisc(string Title)
+        {
+
+            bool ClassifiedAsMisc = false;
+            // open service mesh, heroku,avd, app insights, kafka, kong, nosql, media, VMs, ACS, blockchain, devbox, ase
+
+            if (Title.Contains("heroku", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Heroku";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("mesh", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("osm", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "OSM";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("avd", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "AVD";
+                ClassifiedAsMisc = true;
+            }
+
+
+            return ClassifiedAsMisc;
+            
+        }
         private static bool ClassifyIntegration(string Title)
         {
             bool ClassifiedAsIntegration = false;
@@ -165,11 +190,7 @@ namespace ConsoleExcel2
 
             return ClassifiedAsFusion;
         }
-
-        private static bool ClassifyMisc()
-        {
-            return false;
-        }
+        
         private static bool ClassifyCloudNative(string Title)
         {
             bool ClassifiedAsCN = false;
@@ -250,14 +271,7 @@ namespace ConsoleExcel2
 
                 return ClassifiedAsCN;
 
-        } // end cn tagging
-      
-
-      
-
-        
-
-        static string OneAskClassification = "classification created";
+        } // end cn tagging        
 
     } // end class Program
 
