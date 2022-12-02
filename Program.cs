@@ -11,7 +11,7 @@ namespace ConsoleExcel2
         static string OneAskClassification = "classification created";
         static void Main(string[] args)
         {
-            Console.WriteLine("Start!");
+            Console.WriteLine("Start: : " + DateTime.Now);
             string OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskData3.xlsx";
             //xCel.Application myExcel = new Microsoft.Office.Interop.Excel.Application();
             xCel.Application myExcel = new();
@@ -24,7 +24,7 @@ namespace ConsoleExcel2
            
             //int row = 2;
             int col = 4;
-
+            Console.WriteLine("Loop Start: " + DateTime.Now);
             for (int row = 2; row <= lastRow; row++)
             {
                 if (myWorkssheet.Cells[row, col + 1].Value2 != null)
@@ -36,11 +36,11 @@ namespace ConsoleExcel2
                     myWorkssheet.Cells[row, col] = "Null Title";
 
             }
-
+            Console.WriteLine("Loop End: " + DateTime.Now);
             myWorkbook.Save();
             myWorkbook.Close();
 
-            Console.WriteLine("Row count: "+lastRow);
+            Console.WriteLine("Row count: "+lastRow + "now: : " + DateTime.Now);
             Console.WriteLine("End!");
 
         } // end main
@@ -65,7 +65,7 @@ namespace ConsoleExcel2
         {
 
             bool ClassifiedAsMisc = false;
-            // open service mesh, heroku,avd, app insights, kafka, kong, nosql, media, VMs, ACS, blockchain, devbox, ase
+            //  VMs, ACS, devbox, ase
 
             if (Title.Contains("heroku", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -84,8 +84,54 @@ namespace ConsoleExcel2
                 OneAskClassification = "AVD";
                 ClassifiedAsMisc = true;
             }
-
-
+            else
+                if (Title.Contains("media", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Media";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("kafka", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Kafka";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("kong", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Kong";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("nosql", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "NoSQL";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("blockchain", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("block chain", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "BlockChain";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("appinsights", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("app insights", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("application insights", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "AppInsights";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("devbox", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("dev box", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "DevBox";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("ASE", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "ASE";
+                ClassifiedAsMisc = true;
+            }
             return ClassifiedAsMisc;
             
         }
@@ -200,7 +246,7 @@ namespace ConsoleExcel2
 
 
             List<string> CN_AKSTerms = new List<string>()
-                { "AKS","kubernetes","Kubernetes","k8s"};
+                { "AKS","kubernetes","k8s"};
             List<string> CN_AROTerms = new List<string>()
                 { "ARO","redhat","red hat","openshift","open shift"};
             List<string> CN_ACATerms = new List<string>()
