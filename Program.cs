@@ -1,16 +1,21 @@
 ﻿using System.ComponentModel.Design.Serialization;
 using System.Data.Common;
+using System.Text.RegularExpressions;
 using xCel = Microsoft.Office.Interop.Excel;
 
 namespace ConsoleExcel2
 {
-    internal class Program
+     class Program
     {
+
+        static string OneAskClassification = "classification created";
         static void Main(string[] args)
         {
-            Console.WriteLine("Start!");
+            Console.WriteLine("Start: : " + DateTime.Now);
             string OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskData3.xlsx";
-            xCel.Application myExcel = new Microsoft.Office.Interop.Excel.Application();
+            OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskIN.xlsx";
+            //xCel.Application myExcel = new Microsoft.Office.Interop.Excel.Application();
+            xCel.Application myExcel = new();
             xCel.Workbook myWorkbook;
             xCel.Worksheet myWorkssheet;
 
@@ -19,144 +24,334 @@ namespace ConsoleExcel2
             int lastRow = myWorkssheet.Cells.SpecialCells(xCel.XlCellType.xlCellTypeLastCell).Row;
            
             //int row = 2;
-            int col = 4;            
-
-
+            int col = 4;
+            Console.WriteLine("Loop Start: " + DateTime.Now);
             for (int row = 2; row <= lastRow; row++)
             {
                 if (myWorkssheet.Cells[row, col + 1].Value2 != null)
 
-                    myWorkssheet.Cells[row, col] = OneAskClassification(myWorkssheet.Cells[row, col + 1].Value2);
+                    myWorkssheet.Cells[row, col] = ClassifyOneAsk(myWorkssheet.Cells[row, col + 1].Value2);
 
                 else
 
                     myWorkssheet.Cells[row, col] = "Null Title";
 
             }
-
+            Console.WriteLine("Loop End: " + DateTime.Now);
             myWorkbook.Save();
             myWorkbook.Close();
 
-            Console.WriteLine("Row count: "+lastRow);
+            Console.WriteLine("Row count: "+lastRow + " now: : " + DateTime.Now);
             Console.WriteLine("End!");
 
-
         } // end main
- 
-
        
-        private static string OneAskClassification(string Title)
+        private static string ClassifyOneAsk(string Title)
         {
-            string oneaskClass = "classification not set";
-            string OneAskClassification = "";
-            int CloudNativeCount = 0; // aks, aro, aca, container, cloud native, k8s, kubernetes
-            int EventDriven = 0; // Event Hub/Grid, Services bus, event driven
-            int IntegrationServerless = 0;  // , APIM, serverless, functions, logic apps 
-            int JavaApp = 0;  // java, ASA
+            OneAskClassification = "Classification started";
 
-            OneAskClassification = ClassifyCloudNative(ref Title, ref OneAskClassification, ref NativeCount);
+            if (!ClassifyFusion(Title))
+                if (!ClassifyCloudNative(Title))
+                    if (!ClassifyJava(Title))
+                        if (!ClassifyIntegration(Title))
+                            if (!ClassifyMisc(Title))
+                                OneAskClassification = "Classification not set";           
 
-            OneAskClassification = ClassifyIntegrationServerless(Title);
-            OneAskClassification = ClassifyEventDriven(Title);
-            OneAskClassification = ClassifyJavaApp(Title);
-
-            
-
-            
-
-            // check cloud event driven
-            // Event Hub/Grid, Services bus, event driven
-            if (Title.Contains("event", StringComparison.CurrentCultureIgnoreCase))
-            {
-                oneaskClass = "Event Driven Arch";
-                EventDriven++;
-            };
-            if (Title.Contains("hub", StringComparison.CurrentCultureIgnoreCase))
-            {
-                oneaskClass = "Event Hub";
-                EventDriven++;
-            };
-            if (Title.Contains("grid", StringComparison.CurrentCultureIgnoreCase))
-            {
-                oneaskClass = "Event Grid";
-                EventDriven++;
-            };
-            if (Title.Contains("service", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("bus", StringComparison.CurrentCultureIgnoreCase))
-            {
-                oneaskClass = "Service Bus";
-                EventDriven++;
-            };
-            
-            return oneaskClass;
+            return OneAskClassification;
 
         } // end OneAskClassification
 
-     
-        private static string ClassifyEventDriven(string title)
-        {
-            throw new NotImplementedException();
-        }
 
-        private static string ClassifyJavaApp(string title)
+        private static bool ClassifyMisc(string Title)
         {
-            throw new NotImplementedException();
-        }
 
-        private static bool DoesThisExist(string WhereToLook, string WhatToLookFor)
-        {
-            if (WhereToLook.Contains(WhatToLookFor, StringComparison.CurrentCultureIgnoreCase))
-                return true;
+            bool ClassifiedAsMisc = false;
+            //  VMs, ACS
+
+            if (Title.Contains("heroku", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Heroku";
+                ClassifiedAsMisc = true;
+            }
             else
-                return false;
+                if (Title.Contains("mesh", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("osm", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "OSM";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("avd", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "AVD";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("media", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Media";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("kafka", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Kafka";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("kong", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Kong";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("nosql", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "NoSQL";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("blockchain", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("block chain", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "BlockChain";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("appinsights", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("app insights", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("application insights", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "AppInsights";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("devbox", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("dev box", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "DevBox";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("ASE", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "ASE";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("devops", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("dev ops", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("dev/ops", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "DevOps";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("azure ad", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("aad", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "AAD";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("acs", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("communication services", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "ACS";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("redis", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("cache", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Redis";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("maps", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Maps";
+                ClassifiedAsMisc = true;
+            }
+
+
+            return ClassifiedAsMisc;
+            
         }
-
-
-        private static bool DoTheseBothExist(string WhereToLook, string WhatToLookFor1, string WhatToLookFor2)
+        private static bool ClassifyIntegration(string Title)
         {
-            return true;
+            bool ClassifiedAsIntegration = false;
+            int IntegrationCount = 0;
+
+            List<string> APIM_Terms = new List<string>()
+                { "APIM", "API Management" };
+            List<string> SB_Terms = new List<string>()
+                { "Service Bus", "ServiceBus"};
+            List<string> LA_Terms = new List<string>()
+                { "Logic Apps","LogicApps"};
+
+            List<string> Integration_Terms = new List<string>()
+                { "event", "Functions"};
+            Integration_Terms.AddRange(APIM_Terms);
+            Integration_Terms.AddRange(LA_Terms);
+            Integration_Terms.AddRange(SB_Terms);
+
+            foreach (string IntegrationTerm in Integration_Terms)
+            {
+                if (Title.Contains(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    ClassifiedAsIntegration = true;
+                    OneAskClassification = IntegrationTerm;
+                    IntegrationCount++;
+                    if (IntegrationCount > 1)
+                    {
+                        OneAskClassification = "Integration";
+                        break;
+                    }
+
+                    if (APIM_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
+                        OneAskClassification = "APIM";
+                    else
+                    if (SB_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
+                        OneAskClassification = "Service Bus";
+                    else
+                    if (LA_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
+                        OneAskClassification = "Logic Apps";
+                    else
+                    if (Title.Contains("Event", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("Hub", StringComparison.CurrentCultureIgnoreCase))
+                        OneAskClassification = "Event Hubs";
+                    else
+                    if (Title.Contains("Event", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("Grid", StringComparison.CurrentCultureIgnoreCase))
+                        OneAskClassification = "Event Grid";
+                    else
+                    if (Title.Contains("Event", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("Driven", StringComparison.CurrentCultureIgnoreCase))
+                        OneAskClassification = "Event Driven Arch";
+                    
+
+                } // end if contains
+
+            } // end foreach
+
+
+
+            return ClassifiedAsIntegration;
         }
 
-        private static string ClassifyCloudNative(ref string _Title, ref string _OneAskClassification, ref int _CloudNativeCount)
+        private static bool ClassifyJava(string Title)
         {
-            // check cloud native items
-            if (_Title.Contains("AKS", StringComparison.CurrentCultureIgnoreCase))
+            bool ClassifiedAsJava = false;
+
+            if (Title.Contains("spring", StringComparison.CurrentCultureIgnoreCase))
+            { OneAskClassification = "Spring";
+              ClassifiedAsJava = true;
+            }
+            else
+                if (Title.Contains("java", StringComparison.CurrentCultureIgnoreCase))
             {
-                _OneAskClassification = "AKS";
-                _CloudNativeCount++;
-            };
-
-            if (DoesThisExist(_Title,"AKS"))
-            {
-                _OneAskClassification = "AKS";
-                _CloudNativeCount++;
-            };
-
-            if (Title.Contains("ARO", StringComparison.CurrentCultureIgnoreCase))
-            {
-                oneaskClass = "ARO";
-                CloudNative++;
-            };
-            if (Title.Contains("Containers", StringComparison.CurrentCultureIgnoreCase))
-            {
-                oneaskClass = "Cloud Native";
-                CloudNative++;
-            };
-
-            if (Title.Contains("Cloud", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("Native", StringComparison.CurrentCultureIgnoreCase))
-            {
-                oneaskClass = "Cloud Native";
-                CloudNative++;
-            };
-
-            if (CloudNative > 1)
-                oneaskClass = "Cloud Native";
+                OneAskClassification = "Java";
+                ClassifiedAsJava = true;
+            }          
 
 
+            return ClassifiedAsJava;
 
         }
-        private static string ClassifyIntegrationServerless(string title)
+
+
+        private static bool ClassifyFusion(string Title)
         {
-            throw new NotImplementedException();
+
+            bool ClassifiedAsFusion = false;
+            
+            List<string> Fusion_Terms = new List<string>()
+                { "Power", "Fusion", "RPA", "LC/NC", "Low Code"  };
+
+            foreach (string Fusion_Term in Fusion_Terms)
+            {
+                if (Title.Contains(Fusion_Term, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    OneAskClassification = "LC/NC";
+                    ClassifiedAsFusion = true;
+                    break;
+                }
+            }
+            
+
+            return ClassifiedAsFusion;
         }
-    } // end class
-    } // end namespace
+        
+        private static bool ClassifyCloudNative(string Title)
+        {
+            bool ClassifiedAsCN = false;
+
+            int CloudNativeCount = 0;
+            int AROCount = 0;
+
+
+            List<string> CN_AKSTerms = new List<string>()
+                { "AKS","kubernetes","k8s"};
+            List<string> CN_AROTerms = new List<string>()
+                { "ARO","redhat","red hat","openshift","open shift"};
+            List<string> CN_ACATerms = new List<string>()
+                { "ACA","container app","ContainerApp"};
+
+            List<string> CN_Terms = new List<string>()
+                { "container"};
+
+            CN_Terms.AddRange(CN_AKSTerms);
+            CN_Terms.AddRange(CN_AROTerms);
+            CN_Terms.AddRange(CN_ACATerms);
+
+
+            //  Container App covered by container
+
+            foreach (string CNTerm in CN_Terms)
+                {
+                    if (Title.Contains(CNTerm, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        // you made it this far so count it as a CN terms and capture which ever term we found
+                        ClassifiedAsCN = true;
+                        CloudNativeCount++;
+                        OneAskClassification = CNTerm;
+
+                    // Tagging processing
+
+                    if (Title.Contains("container", StringComparison.CurrentCultureIgnoreCase))                    
+                        if (Title.Contains("container app", StringComparison.CurrentCultureIgnoreCase))
+                            OneAskClassification = "ACA";
+                        else
+                            if (Title.Contains("ContainerApp", StringComparison.CurrentCultureIgnoreCase))
+                            OneAskClassification = "ACA";
+                        else
+                            OneAskClassification = "Cloud Native";
+                    
+
+                    if (CN_ACATerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))                    
+                        OneAskClassification = "ACA";
+                    
+
+                    if (CN_AKSTerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))                    
+                        OneAskClassification = "AKS";
+
+
+                    if (CN_AROTerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        AROCount++;
+                        if (AROCount > 1)
+                            CloudNativeCount--;
+                        OneAskClassification = "ARO";
+                    }
+                    string repattern = @"(cloud).(native)";
+                    if (Regex.IsMatch(CNTerm, repattern, RegexOptions.IgnoreCase))
+                        OneAskClassification = "Cloud Native";
+
+                    // if count is greater than 1, we call it CN and are done
+                    if (CloudNativeCount > 1)
+                    {
+                        OneAskClassification = "Cloud Native";
+                        break;
+                    }
+
+                }  // if term contains
+
+                } // foreach terms             
+
+                //Console.WriteLine("final value: " + OneAskClassification + ". Count: " + CloudNativeCount + ", " + Title);          
+
+                return ClassifiedAsCN;
+
+        } // end cn tagging        
+
+    } // end class Program
+
+ } // end namespace
