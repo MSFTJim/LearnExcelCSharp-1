@@ -13,6 +13,7 @@ namespace ConsoleExcel2
         {
             Console.WriteLine("Start: : " + DateTime.Now);
             string OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskData3.xlsx";
+            OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskIN.xlsx";
             //xCel.Application myExcel = new Microsoft.Office.Interop.Excel.Application();
             xCel.Application myExcel = new();
             xCel.Workbook myWorkbook;
@@ -40,7 +41,7 @@ namespace ConsoleExcel2
             myWorkbook.Save();
             myWorkbook.Close();
 
-            Console.WriteLine("Row count: "+lastRow + "now: : " + DateTime.Now);
+            Console.WriteLine("Row count: "+lastRow + " now: : " + DateTime.Now);
             Console.WriteLine("End!");
 
         } // end main
@@ -65,7 +66,7 @@ namespace ConsoleExcel2
         {
 
             bool ClassifiedAsMisc = false;
-            //  VMs, ACS, devbox, ase
+            //  VMs, ACS
 
             if (Title.Contains("heroku", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -132,6 +133,38 @@ namespace ConsoleExcel2
                 OneAskClassification = "ASE";
                 ClassifiedAsMisc = true;
             }
+            else
+                if (Title.Contains("devops", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("dev ops", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("dev/ops", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "DevOps";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("azure ad", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("aad", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "AAD";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("acs", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("communication services", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "ACS";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("redis", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("cache", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Redis";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("maps", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Maps";
+                ClassifiedAsMisc = true;
+            }
+
+
             return ClassifiedAsMisc;
             
         }
