@@ -1,7 +1,13 @@
-﻿using System.ComponentModel.Design.Serialization;
+﻿using Microsoft.Extensions.Configuration;
+using System.ComponentModel.Design.Serialization;
 using System.Data.Common;
 using System.Text.RegularExpressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using xCel = Microsoft.Office.Interop.Excel;
+
+
+
+
 
 namespace ConsoleExcel2
 {
@@ -11,41 +17,70 @@ namespace ConsoleExcel2
         static string OneAskClassification = "classification created";
         static void Main(string[] args)
         {
-            Console.WriteLine("Start: : " + DateTime.Now);
-            string OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskData3.xlsx";
-            OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskIN.xlsx";
-            //xCel.Application myExcel = new Microsoft.Office.Interop.Excel.Application();
-            xCel.Application myExcel = new();
-            xCel.Workbook myWorkbook;
-            xCel.Worksheet myWorkssheet;
+            IConfiguration config = new ConfigurationBuilder()
+            // .AddJsonFile($"appsettings.json", true, true)   
+            .AddJsonFile("appsettings.json")
+            //.AddUserSecrets<Program>(true)
+            .Build();
 
-            myWorkbook = myExcel.Workbooks.Open(OneAskFile);
-            myWorkssheet = myWorkbook.Worksheets[1];
-            int lastRow = myWorkssheet.Cells.SpecialCells(xCel.XlCellType.xlCellTypeLastCell).Row;
-           
-            //int row = 2;
-            int col = 4;
-            Console.WriteLine("Loop Start: " + DateTime.Now);
-            for (int row = 2; row <= lastRow; row++)
-            {
-                if (myWorkssheet.Cells[row, col + 1].Value2 != null)
+            // Get values from the config given their key and their target type.
+            var tagColumn = config["Tag Column"];
+            var inspectColumn = config["Search Columnn"];
+            var altInspectColumn = config["Alt Search Column"];
 
-                    myWorkssheet.Cells[row, col] = ClassifyOneAsk(myWorkssheet.Cells[row, col + 1].Value2);
+            if (!int.TryParse(tagColumn, out int tagCol))
+                tagCol = 0;
+            if (!int.TryParse(inspectColumn, out int inspectCol))
+                inspectCol = 0;
+            if (!int.TryParse(altInspectColumn, out int altInspectCol))
+                altInspectCol = 0;
 
-                else
+            if ((tagCol> 0) && (inspectCol > 0))
+            { // do Excel processing
+              // Begin Excel processing
+                Console.WriteLine("Start: : " + DateTime.Now);
+                string OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskData3.xlsx";
+                OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskIN.xlsx";
+                //xCel.Application myExcel = new Microsoft.Office.Interop.Excel.Application();
+                xCel.Application myExcel = new();
+                xCel.Workbook myWorkbook;
+                xCel.Worksheet myWorkssheet;
 
-                    myWorkssheet.Cells[row, col] = "Null Title";
+                myWorkbook = myExcel.Workbooks.Open(OneAskFile);
+                myWorkssheet = myWorkbook.Worksheets[1];
+                int lastRow = myWorkssheet.Cells.SpecialCells(xCel.XlCellType.xlCellTypeLastCell).Row;
 
+                //int row = 2;
+                int col = 4;
+                Console.WriteLine("Loop Start: " + DateTime.Now);
+                for (int row = 2; row <= lastRow; row++)
+                {
+                    if (myWorkssheet.Cells[row, col + 1].Value2 != null)
+
+                        myWorkssheet.Cells[row, col] = ClassifyOneAsk(myWorkssheet.Cells[row, col + 1].Value2);
+
+                    else
+
+                        myWorkssheet.Cells[row, col] = "Null Title";
+
+                }
+                Console.WriteLine("Loop End: " + DateTime.Now);
+                myWorkbook.Save();
+                myWorkbook.Close();
+
+                Console.WriteLine("Row count: " + lastRow + " now: : " + DateTime.Now);
+                Console.WriteLine("End!");
+                // End Excel processing
             }
-            Console.WriteLine("Loop End: " + DateTime.Now);
-            myWorkbook.Save();
-            myWorkbook.Close();
+            else
+            {
+                Console.WriteLine("Input Configuration values not set properly");
+            }
 
-            Console.WriteLine("Row count: "+lastRow + " now: : " + DateTime.Now);
-            Console.WriteLine("End!");
+            
 
         } // end main
-       
+
         private static string ClassifyOneAsk(string Title)
         {
             OneAskClassification = "Classification started";
@@ -55,7 +90,10 @@ namespace ConsoleExcel2
                     if (!ClassifyJava(Title))
                         if (!ClassifyIntegration(Title))
                             if (!ClassifyMisc(Title))
-                                OneAskClassification = "Classification not set";           
+                            {
+                              
+                                OneAskClassification = "Classification not set";
+                            }
 
             return OneAskClassification;
 
@@ -173,15 +211,11 @@ namespace ConsoleExcel2
             bool ClassifiedAsIntegration = false;
             int IntegrationCount = 0;
 
-            List<string> APIM_Terms = new List<string>()
-                { "APIM", "API Management" };
-            List<string> SB_Terms = new List<string>()
-                { "Service Bus", "ServiceBus"};
-            List<string> LA_Terms = new List<string>()
-                { "Logic Apps","LogicApps"};
+            List<string> APIM_Terms = new() { "APIM", "API Management" };
+            List<string> SB_Terms = new() { "Service Bus", "ServiceBus"};
+            List<string> LA_Terms = new() { "Logic Apps", "LogicApps" };
 
-            List<string> Integration_Terms = new List<string>()
-                { "event", "Functions"};
+            List<string> Integration_Terms = new() { "event", "Functions" };
             Integration_Terms.AddRange(APIM_Terms);
             Integration_Terms.AddRange(LA_Terms);
             Integration_Terms.AddRange(SB_Terms);
@@ -253,8 +287,7 @@ namespace ConsoleExcel2
 
             bool ClassifiedAsFusion = false;
             
-            List<string> Fusion_Terms = new List<string>()
-                { "Power", "Fusion", "RPA", "LC/NC", "Low Code"  };
+            List<string> Fusion_Terms = new() { "Power", "Fusion", "RPA", "LC/NC", "Low Code" };
 
             foreach (string Fusion_Term in Fusion_Terms)
             {
@@ -278,15 +311,11 @@ namespace ConsoleExcel2
             int AROCount = 0;
 
 
-            List<string> CN_AKSTerms = new List<string>()
-                { "AKS","kubernetes","k8s"};
-            List<string> CN_AROTerms = new List<string>()
-                { "ARO","redhat","red hat","openshift","open shift"};
-            List<string> CN_ACATerms = new List<string>()
-                { "ACA","container app","ContainerApp"};
+            List<string> CN_AKSTerms = new() { "AKS", "kubernetes", "k8s" };
+            List<string> CN_AROTerms = new() { "ARO", "redhat", "red hat", "openshift", "open shift" };
+            List<string> CN_ACATerms = new() { "ACA", "container app", "ContainerApp" };
 
-            List<string> CN_Terms = new List<string>()
-                { "container"};
+            List<string> CN_Terms = new() { "container"};
 
             CN_Terms.AddRange(CN_AKSTerms);
             CN_Terms.AddRange(CN_AROTerms);
