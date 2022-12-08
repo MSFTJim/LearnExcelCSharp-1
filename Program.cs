@@ -21,7 +21,7 @@ namespace ConsoleExcel2
             // .AddJsonFile($"appsettings.json", true, true)   
             .AddJsonFile("appsettings.json")
             //.AddUserSecrets<Program>(true)
-            .Build();
+            .Build();            
 
             // Get values from the config given their key and their target type.
             var tagColumn = config["Tag Column"];
@@ -35,13 +35,11 @@ namespace ConsoleExcel2
             if (!int.TryParse(altInspectColumn, out int altInspectCol))
                 altInspectCol = 0;
 
-            if ((tagCol> 0) && (inspectCol > 0))
-            { // do Excel processing
+            if ((tagCol > 1) && (inspectCol > 1))
+            { 
               // Begin Excel processing
                 Console.WriteLine("Start: : " + DateTime.Now);
-                string OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskData3.xlsx";
-                OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskIN.xlsx";
-                //xCel.Application myExcel = new Microsoft.Office.Interop.Excel.Application();
+                string OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskIN.xlsx";                
                 xCel.Application myExcel = new();
                 xCel.Workbook myWorkbook;
                 xCel.Worksheet myWorkssheet;
@@ -51,17 +49,19 @@ namespace ConsoleExcel2
                 int lastRow = myWorkssheet.Cells.SpecialCells(xCel.XlCellType.xlCellTypeLastCell).Row;
 
                 //int row = 2;
-                int col = 4;
+                //int col = 4;
                 Console.WriteLine("Loop Start: " + DateTime.Now);
                 for (int row = 2; row <= lastRow; row++)
                 {
-                    if (myWorkssheet.Cells[row, col + 1].Value2 != null)
+                    if (myWorkssheet.Cells[row, tagCol].Value2 != null)
+                    {
+                        OneAskClassification = ClassifyOneAsk(myWorkssheet.Cells[row, inspectCol].Value2);
+                        if (OneAskClassification == "Classification not set" && altInspectCol > 0)
+                            myWorkssheet.Cells[row, tagCol] = ClassifyOneAsk(myWorkssheet.Cells[row, altInspectCol].Value2);
 
-                        myWorkssheet.Cells[row, col] = ClassifyOneAsk(myWorkssheet.Cells[row, col + 1].Value2);
-
+                    }
                     else
-
-                        myWorkssheet.Cells[row, col] = "Null Title";
+                        myWorkssheet.Cells[row, tagCol] = "Null Title";
 
                 }
                 Console.WriteLine("Loop End: " + DateTime.Now);
@@ -83,15 +83,14 @@ namespace ConsoleExcel2
 
         private static string ClassifyOneAsk(string Title)
         {
-            OneAskClassification = "Classification started";
+            // OneAskClassification = "Classification started";
 
             if (!ClassifyFusion(Title))
                 if (!ClassifyCloudNative(Title))
                     if (!ClassifyJava(Title))
                         if (!ClassifyIntegration(Title))
                             if (!ClassifyMisc(Title))
-                            {
-                              
+                            {                              
                                 OneAskClassification = "Classification not set";
                             }
 
