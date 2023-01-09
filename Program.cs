@@ -51,8 +51,8 @@ namespace ConsoleExcel2
             OneAskClassification = "Classification started";
 
             if (!ClassifyFusion(Title))
-                if (!ClassifyCloudNative(Title))
-                    if (!ClassifyJava(Title))
+                if (!ClassifyJava(Title))
+                    if (!ClassifyCloudNative(Title))
                         if (!ClassifyIntegration(Title))
                             if (!ClassifyMisc(Title))
                                 OneAskClassification = "Classification not set";           
