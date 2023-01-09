@@ -27,6 +27,8 @@ namespace ConsoleExcel2
             var tagColumn = config["Tag Column"];
             var inspectColumn = config["Search Columnn"];
             var altInspectColumn = config["Alt Search Column"];
+            var FileToProcess = config["FileToProcess"];
+            var PathtoFile = config["PathtoFile"];
 
             if (!int.TryParse(tagColumn, out int tagCol))
                 tagCol = 0;
@@ -35,11 +37,14 @@ namespace ConsoleExcel2
             if (!int.TryParse(altInspectColumn, out int altInspectCol))
                 altInspectCol = 0;
 
+            
+
             if ((tagCol > 1) && (inspectCol > 1))
             { 
               // Begin Excel processing
                 Console.WriteLine("Start: : " + DateTime.Now);
-                string OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskIN.xlsx";                
+                string OneAskFile = "C:\\Users\\jamesvac\\Documents\\OneAskIN.xlsx";
+                OneAskFile = PathtoFile + FileToProcess;
                 xCel.Application myExcel = new();
                 xCel.Workbook myWorkbook;
                 xCel.Worksheet myWorkssheet;
@@ -53,11 +58,18 @@ namespace ConsoleExcel2
                 Console.WriteLine("Loop Start: " + DateTime.Now);
                 for (int row = 2; row <= lastRow; row++)
                 {
-                    if (myWorkssheet.Cells[row, tagCol].Value2 != null)
+                    if (myWorkssheet.Cells[row, inspectCol].Value2 != null)
                     {
                         OneAskClassification = ClassifyOneAsk(myWorkssheet.Cells[row, inspectCol].Value2);
                         if (OneAskClassification == "Classification not set" && altInspectCol > 0)
-                            myWorkssheet.Cells[row, tagCol] = ClassifyOneAsk(myWorkssheet.Cells[row, altInspectCol].Value2);
+                        {
+                            if (myWorkssheet.Cells[row, altInspectCol].Value2 != null)
+                                myWorkssheet.Cells[row, tagCol] = ClassifyOneAsk(myWorkssheet.Cells[row, altInspectCol].Value2);
+                            else
+                                myWorkssheet.Cells[row, tagCol] = "Null Alt Title";
+                        }
+                        else
+                            myWorkssheet.Cells[row, tagCol] = OneAskClassification;
 
                     }
                     else
