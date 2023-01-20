@@ -178,7 +178,7 @@ namespace ConsoleExcel2
             List<string> SB_Terms = new List<string>()
                 { "Service Bus", "ServiceBus"};
             List<string> LA_Terms = new List<string>()
-                { "Logic Apps","LogicApps"};
+                { "Logic App","LogicApp"};
 
             List<string> Integration_Terms = new List<string>()
                 { "event", "Functions"};
@@ -281,9 +281,11 @@ namespace ConsoleExcel2
             List<string> CN_AKSTerms = new List<string>()
                 { "AKS","kubernetes","k8s"};
             List<string> CN_AROTerms = new List<string>()
-                { "ARO","redhat","red hat","openshift","open shift"};
+                { "ARO","redhat","red hat","openshift","open shift", "OCP"};
             List<string> CN_ACATerms = new List<string>()
                 { "ACA","container app","ContainerApp"};
+            List<string> CN_ASFTerms = new List<string>()
+                { "ASF","service fabric","servicefabric"};
 
             List<string> CN_Terms = new List<string>()
                 { "container"};
@@ -291,6 +293,7 @@ namespace ConsoleExcel2
             CN_Terms.AddRange(CN_AKSTerms);
             CN_Terms.AddRange(CN_AROTerms);
             CN_Terms.AddRange(CN_ACATerms);
+            CN_Terms.AddRange(CN_ASFTerms);
 
 
             //  Container App covered by container
@@ -318,7 +321,10 @@ namespace ConsoleExcel2
 
                     if (CN_ACATerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))                    
                         OneAskClassification = "ACA";
-                    
+
+                    if (CN_ASFTerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))
+                        OneAskClassification = "ASF";
+
 
                     if (CN_AKSTerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))                    
                         OneAskClassification = "AKS";
