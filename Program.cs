@@ -98,8 +98,8 @@ namespace ConsoleExcel2
             // OneAskClassification = "Classification started";
 
             if (!ClassifyFusion(Title))
-                if (!ClassifyCloudNative(Title))
-                    if (!ClassifyJava(Title))
+                if (!ClassifyJava(Title))
+                    if (!ClassifyCloudNative(Title))
                         if (!ClassifyIntegration(Title))
                             if (!ClassifyMisc(Title))
                             {                              
@@ -115,6 +115,13 @@ namespace ConsoleExcel2
         {
 
             bool ClassifiedAsMisc = false;
+            string patternAppInnovation = "((?i)app).*?((?i)inn).*?";
+            //"((?i)app|(?i)mod)"gm
+
+
+            string patternAppModernization = "((?i)app).*?((?i)mod).*?";
+
+            //@"((?i)app|(?i)mod)";
             //  VMs, ACS
 
             if (Title.Contains("heroku", StringComparison.CurrentCultureIgnoreCase))
@@ -212,6 +219,84 @@ namespace ConsoleExcel2
                 OneAskClassification = "Maps";
                 ClassifiedAsMisc = true;
             }
+            else
+                if (Title.Contains("sap", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "SAP";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("data factory", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Data Factory";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("iot", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "IoT";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("RFP", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "RFx";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("RFi", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "RFx";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("RFx", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "RFx";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("Chaos", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Chaos";
+                ClassifiedAsMisc = true;
+            }
+            else
+                if (Title.Contains("Notification Hub", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Notification Hub";
+                ClassifiedAsMisc = true;
+            }
+            else if (Title.Contains("FedRAMP", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "FedRAMP";
+                ClassifiedAsMisc = true;
+            }
+            else if (Title.Contains("Load test", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Load Test";
+                ClassifiedAsMisc = true;
+            }
+            else if (Title.Contains(".net", StringComparison.CurrentCultureIgnoreCase) || Title.Contains("dotnet", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = ".NET";
+                ClassifiedAsMisc = true;
+            }
+            else if (Title.Contains("Xamarin", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Xamarin";
+                ClassifiedAsMisc = true;
+            }
+            else if (Regex.IsMatch(Title, patternAppInnovation) || Regex.IsMatch(Title, patternAppModernization))
+            {
+                OneAskClassification = "App Mod/Innov";
+                ClassifiedAsMisc = true;
+            }
+            else if (Title.Contains("mobile", StringComparison.CurrentCultureIgnoreCase))
+            {
+                OneAskClassification = "Mobile";
+                ClassifiedAsMisc = true;
+            }
 
 
             return ClassifiedAsMisc;
@@ -224,19 +309,22 @@ namespace ConsoleExcel2
 
             List<string> APIM_Terms = new() { "APIM", "API Management" };
             List<string> SB_Terms = new() { "Service Bus", "ServiceBus"};
-            List<string> LA_Terms = new() { "Logic Apps", "LogicApps" };
+            List<string> LA_Terms = new() { "Logic App", "LogicApp" };
+            List<string> Functions_Terms = new() { "function" };
 
-            List<string> Integration_Terms = new() { "event", "Functions" };
+
+            List<string> Integration_Terms = new() { "event", "Functions", "AIS", "Integration", "API", "serverless" };
             Integration_Terms.AddRange(APIM_Terms);
             Integration_Terms.AddRange(LA_Terms);
             Integration_Terms.AddRange(SB_Terms);
+            Integration_Terms.AddRange(Functions_Terms);
 
             foreach (string IntegrationTerm in Integration_Terms)
             {
                 if (Title.Contains(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase))
                 {
                     ClassifiedAsIntegration = true;
-                    OneAskClassification = IntegrationTerm;
+                    OneAskClassification = "Integration";
                     IntegrationCount++;
                     if (IntegrationCount > 1)
                     {
@@ -261,7 +349,10 @@ namespace ConsoleExcel2
                     else
                     if (Title.Contains("Event", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("Driven", StringComparison.CurrentCultureIgnoreCase))
                         OneAskClassification = "Event Driven Arch";
-                    
+                    else
+                    if (Functions_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
+                        OneAskClassification = "Functions";
+
 
                 } // end if contains
 
@@ -323,14 +414,22 @@ namespace ConsoleExcel2
 
 
             List<string> CN_AKSTerms = new() { "AKS", "kubernetes", "k8s" };
-            List<string> CN_AROTerms = new() { "ARO", "redhat", "red hat", "openshift", "open shift" };
+            List<string> CN_AROTerms = new() { "ARO", "redhat", "red hat", "openshift", "open shift", "OCP" };
             List<string> CN_ACATerms = new() { "ACA", "container app", "ContainerApp" };
+            List<string> CN_ASFTerms = new() { "Fabric", "asf"};
+            List<string> CN_CloudNativeTerms = new() { "cloud native", "cloudnative" , "cloud-native", "cloud/native" };
+            List<string> CN_DaprTerms = new() { "dapr" };
+
+
 
             List<string> CN_Terms = new() { "container"};
 
             CN_Terms.AddRange(CN_AKSTerms);
             CN_Terms.AddRange(CN_AROTerms);
             CN_Terms.AddRange(CN_ACATerms);
+            CN_Terms.AddRange(CN_ASFTerms);
+            CN_Terms.AddRange(CN_CloudNativeTerms);
+            CN_Terms.AddRange(CN_DaprTerms);
 
 
             //  Container App covered by container
@@ -358,7 +457,10 @@ namespace ConsoleExcel2
 
                     if (CN_ACATerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))                    
                         OneAskClassification = "ACA";
-                    
+
+                    if (CN_ASFTerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))
+                        OneAskClassification = "ASF";
+
 
                     if (CN_AKSTerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))                    
                         OneAskClassification = "AKS";
@@ -371,9 +473,17 @@ namespace ConsoleExcel2
                             CloudNativeCount--;
                         OneAskClassification = "ARO";
                     }
-                    string repattern = @"(cloud).(native)";
-                    if (Regex.IsMatch(CNTerm, repattern, RegexOptions.IgnoreCase))
+
+                    if (CN_CloudNativeTerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))
                         OneAskClassification = "Cloud Native";
+
+                    if (CN_DaprTerms.Any(s => s.Equals(CNTerm, StringComparison.CurrentCultureIgnoreCase)))
+                        OneAskClassification = "DAPR";
+
+                    //the below code does not work!  leaving it in until i have the courage to remove it!
+                    //  string repattern = @"((?)cloud).((?i)native)";                    
+                    //  if (Regex.IsMatch(CNTerm, repattern, RegexOptions.IgnoreCase))
+                    //      OneAskClassification = "Cloud Native";
 
                     // if count is greater than 1, we call it CN and are done
                     if (CloudNativeCount > 1)
