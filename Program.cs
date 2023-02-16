@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.ComponentModel.Design.Serialization;
 using System.Data.Common;
+using System.Linq;
 using System.Text.RegularExpressions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using xCel = Microsoft.Office.Interop.Excel;
@@ -95,7 +96,7 @@ namespace ConsoleExcel2
 
         private static string ClassifyOneAsk(string Title)
         {
-            // OneAskClassification = "Classification started";
+            OneAskClassification = "Classification started";
 
             if (!ClassifyFusion(Title))
                 if (!ClassifyJava(Title))
@@ -323,35 +324,45 @@ namespace ConsoleExcel2
             {
                 if (Title.Contains(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    ClassifiedAsIntegration = true;
-                    OneAskClassification = "Integration";
-                    IntegrationCount++;
-                    if (IntegrationCount > 1)
-                    {
-                        OneAskClassification = "Integration";
-                        break;
-                    }
+                    // If API but only becuase part of Any APIM-Term then exit
+                    bool APIwithinAPIM = false;
+                    if (IntegrationTerm == "API")
+                        foreach (var item in APIM_Terms)                       
+                            if ((Title.Contains(item, StringComparison.CurrentCultureIgnoreCase)))
+                                APIwithinAPIM = true;
 
-                    if (APIM_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
-                        OneAskClassification = "APIM";
-                    else
-                    if (SB_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
-                        OneAskClassification = "Service Bus";
-                    else
-                    if (LA_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
-                        OneAskClassification = "Logic Apps";
-                    else
-                    if (Title.Contains("Event", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("Hub", StringComparison.CurrentCultureIgnoreCase))
-                        OneAskClassification = "Event Hubs";
-                    else
-                    if (Title.Contains("Event", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("Grid", StringComparison.CurrentCultureIgnoreCase))
-                        OneAskClassification = "Event Grid";
-                    else
-                    if (Title.Contains("Event", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("Driven", StringComparison.CurrentCultureIgnoreCase))
-                        OneAskClassification = "Event Driven Arch";
-                    else
-                    if (Functions_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
-                        OneAskClassification = "Functions";
+                    if (!APIwithinAPIM)
+                    {
+                        ClassifiedAsIntegration = true;
+                        OneAskClassification = "Integration";
+                        IntegrationCount++;
+                        if (IntegrationCount > 1)
+                        {
+                            OneAskClassification = "Integration";
+                            break;
+                        }
+
+                        if (APIM_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
+                            OneAskClassification = "APIM";
+                        else
+                        if (SB_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
+                            OneAskClassification = "Service Bus";
+                        else
+                        if (LA_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
+                            OneAskClassification = "Logic Apps";
+                        else
+                        if (Title.Contains("Event", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("Hub", StringComparison.CurrentCultureIgnoreCase))
+                            OneAskClassification = "Event Hubs";
+                        else
+                        if (Title.Contains("Event", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("Grid", StringComparison.CurrentCultureIgnoreCase))
+                            OneAskClassification = "Event Grid";
+                        else
+                        if (Title.Contains("Event", StringComparison.CurrentCultureIgnoreCase) && Title.Contains("Driven", StringComparison.CurrentCultureIgnoreCase))
+                            OneAskClassification = "Event Driven Arch";
+                        else
+                        if (Functions_Terms.Any(s => s.Equals(IntegrationTerm, StringComparison.CurrentCultureIgnoreCase)))
+                            OneAskClassification = "Functions";
+                    } // End APIwithinAPIM
 
 
                 } // end if contains
